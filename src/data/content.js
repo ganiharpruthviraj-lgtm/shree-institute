@@ -138,7 +138,7 @@ export const ADMISSIONS = {
 
 // TODO: replace the address + maps link with the institute's real details.
 export const CONTACT = {
-  phone: '+91 99014 02758',
+  phone: '+91 96117 92157',
   address: '1st Floor, Vidya Complex, Station Road, Pune 411001',
   mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Shree+Institute+of+Learning',
 }
