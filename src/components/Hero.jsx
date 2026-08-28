@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { AlertCircle, CheckCircle2, ChevronDown, Menu, X } from 'lucide-react'
 import { HERO, INSTITUTE, LOGO_PATH, NAV_CTA, NAV_LINKS, VIDEO_SRC } from '../data/content'
 import { bookDemo } from '../lib/api'
