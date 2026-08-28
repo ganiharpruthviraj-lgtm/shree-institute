@@ -85,8 +85,26 @@ export default async function handler(req, res) {
     return res.status(400).json({ success: false, error })
   }
 
-  const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM, MANAGER_WHATSAPP_TO } =
+  const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM, MANAGER_WHATSAPP_TO, GOOGLE_SHEET_URL } =
     process.env
+
+  // Optional Google Sheet sync
+  if (GOOGLE_SHEET_URL) {
+    try {
+      await fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: lead.studentName,
+          class: lead.studentClass,
+          phone: lead.parentPhone,
+          source: lead.source,
+        }),
+      })
+    } catch (sheetErr) {
+      console.error('[vercel-api] Google Sheet sync failed:', sheetErr.message)
+    }
+  }
 
   const from = TWILIO_WHATSAPP_FROM
     ? (TWILIO_WHATSAPP_FROM.startsWith('whatsapp:') ? TWILIO_WHATSAPP_FROM : `whatsapp:${TWILIO_WHATSAPP_FROM}`)
