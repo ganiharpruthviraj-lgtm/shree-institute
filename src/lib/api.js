@@ -8,7 +8,7 @@
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/+$/, '')
 const GOOGLE_SHEET_URL =
   import.meta.env.VITE_GOOGLE_SHEET_URL ||
-  'https://script.google.com/macros/s/AKfycbw-LTchF2UweRikodj7MKwWEaoi7dkzymbcjPdKcweufxfeHnBqcjmakAKunWjvu3ISIw/exec'
+  'https://script.google.com/macros/s/AKfycbxZc7A0gyKCxZ0biM-5J_0boNcLzOU9PZA4SkYXvU--mFOzQyTIIvTmogr38kgAuEs4/exec'
 
 const TIMEOUT_MS = 10_000
 
