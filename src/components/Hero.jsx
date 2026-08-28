@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { ChevronDown, Menu, X } from 'lucide-react'
+import { AlertCircle, CheckCircle2, ChevronDown, Menu, X } from 'lucide-react'
 import { HERO, INSTITUTE, LOGO_PATH, NAV_CTA, NAV_LINKS, VIDEO_SRC } from '../data/content'
 import { bookDemo } from '../lib/api'
 import {
@@ -32,12 +31,26 @@ export default function Hero() {
   async function handleSubmit(event) {
     event.preventDefault()
     const form = event.target
+    const rawPhone = form.parentPhone.value.trim()
+
+    // Validate phone number
+    const cleaned = rawPhone.replace(/\D/g, '')
+    const isValid =
+      (cleaned.length === 10 && /^[6-9]/.test(cleaned)) ||
+      (cleaned.length === 11 && cleaned.startsWith('0') && /^[6-9]/.test(cleaned.slice(1))) ||
+      (cleaned.length === 12 && cleaned.startsWith('91') && /^[6-9]/.test(cleaned.slice(2)))
+
+    if (!isValid) {
+      setError('Please enter a valid 10-digit mobile number (e.g. 96117 92157).')
+      setStatus('error')
+      return
+    }
 
     setStatus('sending')
     setError('')
 
     try {
-      await bookDemo({ parentPhone: form.parentPhone.value, source: 'hero' })
+      await bookDemo({ parentPhone: rawPhone, source: 'hero' })
       form.reset()
       setStatus('sent')
     } catch (submitError) {
@@ -212,13 +225,17 @@ export default function Hero() {
 
             <div aria-live="polite">
               {status === 'sent' && (
-                <p className={`mt-3 max-w-md text-sm ${tone.body}`}>
-                  Got it — we&rsquo;ll call you back shortly to fix a time for the free demo class.
-                </p>
+                <div className="mt-3 flex items-start gap-2.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300 backdrop-blur-md">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <span>Got it &mdash; we&rsquo;ll call you back shortly to arrange the free demo class!</span>
+                </div>
               )}
 
               {status === 'error' && (
-                <p className="mt-3 max-w-md text-sm text-red-700 lg:text-red-300">{error}</p>
+                <div className="mt-3 flex items-start gap-2.5 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 backdrop-blur-md">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                  <span>{error}</span>
+                </div>
               )}
             </div>
           </div>

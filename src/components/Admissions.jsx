@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, MapPin, Phone } from 'lucide-react'
+import { AlertCircle, CheckCircle2, ChevronDown, MapPin, Phone } from 'lucide-react'
 import { ADMISSIONS, CONTACT, INSTITUTE, LOGO_PATH } from '../data/content'
 import { bookDemo } from '../lib/api'
 import { useInView } from '../hooks/useInView'
@@ -18,6 +18,20 @@ export default function Admissions() {
   async function handleSubmit(event) {
     event.preventDefault()
     const form = event.target
+    const rawPhone = form.parentPhone.value.trim()
+
+    // Validate phone number
+    const cleaned = rawPhone.replace(/\D/g, '')
+    const isValid =
+      (cleaned.length === 10 && /^[6-9]/.test(cleaned)) ||
+      (cleaned.length === 11 && cleaned.startsWith('0') && /^[6-9]/.test(cleaned.slice(1))) ||
+      (cleaned.length === 12 && cleaned.startsWith('91') && /^[6-9]/.test(cleaned.slice(2)))
+
+    if (!isValid) {
+      setError('Please enter a valid 10-digit mobile number (e.g. 96117 92157).')
+      setStatus('error')
+      return
+    }
 
     setStatus('sending')
     setError('')
@@ -26,7 +40,7 @@ export default function Admissions() {
       await bookDemo({
         studentName: form.studentName.value,
         studentClass: form.studentClass.value,
-        parentPhone: form.parentPhone.value,
+        parentPhone: rawPhone,
       })
       form.reset()
       setStatus('sent')
@@ -111,19 +125,22 @@ export default function Admissions() {
           {/* aria-live so a screen reader announces the outcome without a refocus */}
           <div aria-live="polite">
             {status === 'sent' && (
-              <p className="text-sm text-white/70">
-                Thanks &mdash; we&rsquo;ve got the details and will call back shortly to arrange the demo
-                class.
-              </p>
+              <div className="mt-4 flex items-start gap-2.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3.5 text-sm text-emerald-300 backdrop-blur-md">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                <span>Thanks &mdash; we&rsquo;ve received your request and will call you back shortly to arrange the demo class!</span>
+              </div>
             )}
 
             {status === 'error' && (
-              <p className="text-sm text-red-300">
-                {error}{' '}
-                <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className="underline">
-                  {CONTACT.phone}
-                </a>
-              </p>
+              <div className="mt-4 flex items-start gap-2.5 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3.5 text-sm text-red-300 backdrop-blur-md">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                <div>
+                  <span>{error}</span>{' '}
+                  <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className="underline font-medium hover:text-white">
+                    {CONTACT.phone}
+                  </a>
+                </div>
+              </div>
             )}
           </div>
         </form>

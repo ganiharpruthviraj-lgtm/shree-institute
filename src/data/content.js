@@ -124,6 +124,33 @@ export const TESTIMONIALS = [
   },
 ]
 
+export const TOPPERS = [
+  {
+    name: 'Aarav Patil',
+    score: '98.4%',
+    badge: 'Class 10 Board Topper',
+    highlights: 'Math: 100/100 | Science: 98/100',
+    quote: 'The 1-on-1 doubt sessions and weekly mock tests helped me achieve 100% in Math!',
+    year: '2025-26 Batch',
+  },
+  {
+    name: 'Ananya Deshmukh',
+    score: '96.8%',
+    badge: 'State Distinction',
+    highlights: 'Science: 99/100 | Math: 97/100',
+    quote: 'Concept clarity in Physics and Chemistry made board questions super easy to solve.',
+    year: '2025-26 Batch',
+  },
+  {
+    name: 'Rohan Kulkarni',
+    score: '95.6%',
+    badge: 'NTSE & Olympiad Scholar',
+    highlights: 'Class 9 School Rank 1',
+    quote: 'Early foundation in Class 8 & 9 built my analytical thinking for competitive exams.',
+    year: '2025-26 Batch',
+  },
+]
+
 export const ADMISSIONS = {
   title: 'Admissions Open for New Batches',
   subtitle: 'Reserve a seat for your child or request a free 3-day demo class.',

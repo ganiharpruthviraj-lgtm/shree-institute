@@ -3,6 +3,7 @@ import Hero from './components/Hero'
 import StatsBar from './components/StatsBar'
 import Programs from './components/Programs'
 import WhyUs from './components/WhyUs'
+import Toppers from './components/Toppers'
 import Testimonials from './components/Testimonials'
 import Admissions from './components/Admissions'
 
@@ -33,6 +34,7 @@ export default function App() {
       <StatsBar />
       <Programs />
       <WhyUs />
+      <Toppers />
       <Testimonials />
       <Admissions />
     </div>
