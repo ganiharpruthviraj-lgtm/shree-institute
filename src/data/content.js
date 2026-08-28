@@ -136,9 +136,8 @@ export const ADMISSIONS = {
   submit: 'Request Free Demo & Callback',
 }
 
-// TODO: replace the address + maps link with the institute's real details.
 export const CONTACT = {
   phone: '+91 96117 92157',
-  address: '1st Floor, Vidya Complex, Station Road, Pune 411001',
-  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Shree+Institute+of+Learning',
+  address: 'Ring Road, Hirapura, Kalaburagi, Karnataka 585102',
+  mapsUrl: 'https://maps.app.goo.gl/c5dspNbE2wgy2z9H9',
 }
