@@ -5,7 +5,7 @@
 
 // Set VITE_API_BASE_URL in .env for staging/production. The default is the local
 // Express server from shree-institute/server.
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace(/\/+$/, '')
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
 const GOOGLE_SHEET_URL =
   import.meta.env.VITE_GOOGLE_SHEET_URL ||
   'https://script.google.com/macros/s/AKfycbxZc7A0gyKCxZ0biM-5J_0boNcLzOU9PZA4SkYXvU--mFOzQyTIIvTmogr38kgAuEs4/exec'
@@ -16,7 +16,7 @@ const TIMEOUT_MS = 10_000
  * Send lead payload directly to Google Apps Script Web App if configured.
  */
 async function postToGoogleSheet(payload) {
-  if (!GOOGLE_SHEET_URL) return
+  if (!GOOGLE_SHEET_URL) return false
   try {
     await fetch(GOOGLE_SHEET_URL, {
       method: 'POST',
@@ -29,8 +29,10 @@ async function postToGoogleSheet(payload) {
       }),
       mode: 'no-cors',
     })
+    return true
   } catch (sheetError) {
     console.warn('[GoogleSheet] Lead sync warning:', sheetError.message)
+    return false
   }
 }
 
@@ -45,8 +47,12 @@ export async function bookDemo(payload) {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
 
-  // Fire Google Sheet sync in parallel if configured
-  postToGoogleSheet(payload)
+  let sheetSaved = false
+  try {
+    sheetSaved = await postToGoogleSheet(payload)
+  } catch (err) {
+    console.warn('[GoogleSheet] Sync error:', err)
+  }
 
   try {
     const response = await fetch(`${BASE_URL}/api/book-demo`, {
@@ -60,11 +66,18 @@ export async function bookDemo(payload) {
     const data = await response.json().catch(() => ({}))
 
     if (!response.ok || !data.success) {
+      if (sheetSaved) {
+        return { success: true, notified: false, mode: 'google-sheet' }
+      }
       throw new Error(data.error || `Something went wrong (${response.status}). Please call us.`)
     }
 
     return data
   } catch (error) {
+    // If the data was saved to Google Sheets, show success on the website!
+    if (sheetSaved) {
+      return { success: true, notified: false, mode: 'google-sheet' }
+    }
     if (error.name === 'AbortError') {
       throw new Error('That took too long. Please try again or call us directly.')
     }
