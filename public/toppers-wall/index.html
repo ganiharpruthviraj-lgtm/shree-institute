@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shree Institute - Toppers Wall Demo</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandDark: '#010101',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- React & Babel -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Google Fonts: Geist & Silkscreen -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Silkscreen&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #010101;
+      color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+    }
+    .stat-font {
+      font-family: 'Silkscreen', cursive;
+    }
+    .frost-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .frost-card:hover {
+      border-color: rgba(245, 158, 11, 0.4) !important;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(245, 158, 11, 0.15);
+    }
+    .cta-button {
+      background: linear-gradient(to bottom, #2B2B2B, #101010);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .cta-button:hover {
+      background: linear-gradient(to bottom, #3A3A3A, #181818);
+    }
+    .shimmer-gold {
+      background: linear-gradient(90deg, #fef08a 0%, #fde047 50%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    /* Hide scrollbar but keep scrollability */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-[#010101] text-white min-h-screen">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const BATCHES = {
+      "2023-24": {
+        academicYear: "2023–24",
+        title: "CBSE & SSLC RESULTS 2023–24",
+        posterUrl: "/toppers-wall/poster_2023_24.jpg",
+        director: {
+          name: "Sridhar H.K.",
+          qualification: "M.Sc B.Ed",
+          title: "Academic Director",
+          photo: "/toppers-wall/students/2024/director_2024.jpg",
+          message: "100% Success in Grade X CBSE & State syllabus from the last 10 consecutive years!"
+        },
+        stats: {
+          overallPass: "100%",
+          topScore: "94%",
+          specialRecord: "GRADE X RECORD",
+          totalStudents: "23+"
+        }
+      },
+      "2022-23": {
+        academicYear: "2022–23",
+        title: "CBSE & SSLC RESULTS 2022–23",
+        posterUrl: "/toppers-wall/poster.jpg",
+        director: {
+          name: "Sridhar H.K.",
+          qualification: "M.Sc B.Ed",
+          title: "Academic Director",
+          photo: "/toppers-wall/students/director.jpg",
+          message: "Guiding students to master core concepts and achieve phenomenal 100% board exam success year after year."
+        },
+        stats: {
+          overallPass: "100%",
+          topScore: "96.6%",
+          specialRecord: "100/100 RECORD",
+          totalStudents: "30+"
+        }
+      },
+      "old-batch": {
+        academicYear: "Earlier Batch",
+        title: "SSLC RESULTS — Earlier Batch",
+        posterUrl: "/toppers-wall/poster_old_batch.jpg",
+        director: {
+          name: "Mr. Sridhar",
+          qualification: "M.Sc., B.Ed",
+          title: "Academic Director",
+          photo: "/toppers-wall/students/director.jpg",
+          message: "100% Result. Sai Presidency Degree College — Near Sai Mandir, Kalaburagi."
+        },
+        stats: {
+          overallPass: "100%",
+          topScore: "99.04%",
+          specialRecord: "DIST. 3RD RANK",
+          totalStudents: "18+"
+        }
+      },
+      "2019-20": {
+        academicYear: "2019–20",
+        title: "CBSE & STATE RESULTS 2019–20",
+        posterUrl: "/toppers-wall/poster_2019_20.jpg",
+        director: {
+          name: "Mr. Sridhar",
+          qualification: "M.Sc., B.Ed",
+          title: "Academic Director",
+          photo: "/toppers-wall/students/director.jpg",
+          message: "100% Result. Hearty Congratulations and Blessings from: Mr. Vinod, Mr. Natraj."
+        },
+        stats: {
+          overallPass: "100%",
+          topScore: "96.3%",
+          specialRecord: "NIVEDITA S.M TOPPER",
+          totalStudents: "13+"
+        }
+      }
+    };
+
+    function App() {
+      const [selectedBatch, setSelectedBatch] = useState('2023-24');
+      const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+      const currentData = BATCHES[selectedBatch];
+
+      return (
+        <div className="min-h-screen flex flex-col bg-[#010101]">
+          {/* Navbar */}
+          <nav className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-3 sm:px-8 sm:py-5 lg:px-12 border-b border-white/10 bg-[#010101]/90 backdrop-blur-md sticky top-0 z-40 gap-3">
+            {/* Logo Row */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <svg width="24" height="24" viewBox="0 0 256 256" fill="white" className="shrink-0">
+                  <path d="M 128 128 C 128 198.692 70.692 256 0 256 C 0 185.308 57.308 128 128 128 Z M 128 128 C 198.692 128 256 185.308 256 256 C 185.308 256 128 198.692 128 128 Z M 0 0 C 70.692 0 128 57.308 128 128 C 57.308 128 0 70.692 0 0 Z M 256 0 C 256 70.692 198.692 128 128 128 C 128 57.308 185.308 0 256 0 Z" />
+                </svg>
+                <div>
+                  <span className="text-base font-bold tracking-tight text-white block leading-tight">Shree Institute</span>
+                  <span className="text-[9px] text-amber-300/80 font-medium uppercase tracking-wider block">Wall of Fame</span>
+                </div>
+              </div>
+              {/* Mobile HD Button */}
+              <button
+                onClick={() => setIsLightboxOpen(true)}
+                className="sm:hidden cta-button px-3 py-1.5 rounded-full text-[10px] font-semibold text-amber-300 border border-amber-400/30"
+              >
+                🔍 HD Poster
+              </button>
+            </div>
+
+            {/* Batch Tabs — horizontally scrollable on mobile */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-0.5 no-scrollbar">
+              <div className="flex items-center gap-1 rounded-full bg-white/10 p-1 border border-amber-400/30 shrink-0">
+                <button
+                  onClick={() => setSelectedBatch('2023-24')}
+                  className={`px-3 py-1 rounded-full text-[11px] font-extrabold whitespace-nowrap transition-all ${selectedBatch === '2023-24' ? 'bg-amber-400 text-black shadow' : 'text-amber-300'}`}
+                >
+                  🔥 2023–24
+                </button>
+                <button
+                  onClick={() => setSelectedBatch('2022-23')}
+                  className={`px-3 py-1 rounded-full text-[11px] font-extrabold whitespace-nowrap transition-all ${selectedBatch === '2022-23' ? 'bg-amber-400 text-black shadow' : 'text-amber-300'}`}
+                >
+                  ⭐ 2022–23
+                </button>
+                <button
+                  onClick={() => setSelectedBatch('old-batch')}
+                  className={`px-3 py-1 rounded-full text-[11px] font-extrabold whitespace-nowrap transition-all ${selectedBatch === 'old-batch' ? 'bg-amber-400 text-black shadow' : 'text-amber-300'}`}
+                >
+                  🏅 Earlier
+                </button>
+                <button
+                  onClick={() => setSelectedBatch('2019-20')}
+                  className={`px-3 py-1 rounded-full text-[11px] font-extrabold whitespace-nowrap transition-all ${selectedBatch === '2019-20' ? 'bg-amber-400 text-black shadow' : 'text-amber-300'}`}
+                >
+                  🏆 2019–20
+                </button>
+              </div>
+
+              <button
+                onClick={() => setIsLightboxOpen(true)}
+                className="cta-button hidden sm:flex px-4 py-2 rounded-full text-xs font-semibold text-white transition-opacity hover:opacity-90 items-center gap-2 shadow-lg"
+              >
+                <span>🔍 View Full HD Poster</span>
+              </button>
+            </div>
+          </nav>
+
+          {/* Hero Header */}
+          <section className="px-5 py-8 sm:px-8 sm:py-12 lg:px-12 relative overflow-hidden border-b border-white/10 bg-gradient-to-b from-white/5 to-transparent">
+            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">
+              
+              {/* Left Column: Title & Headline */}
+              <div className="max-w-3xl">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3.5 py-1 rounded-full">
+                    Academic Year {currentData.academicYear} Results
+                  </span>
+                </div>
+                <h1 className="text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.1]">
+                  Congratulations To All Our Toppers!
+                </h1>
+                <p className="mt-4 text-sm sm:text-base leading-relaxed text-white/70">
+                  Shree Institute of Learning (Classes 8th, 9th & 10th CBSE & State Syllabus). Outstanding 100% Board Pass Rate & Top Ranks in Kalaburagi.
+                </p>
+              </div>
+
+              {/* Right Column: Academic Director Spotlight */}
+              <div className="frost-card p-5 rounded-3xl shrink-0 w-full lg:w-80 border-amber-400/30 flex flex-col items-center text-center bg-gradient-to-b from-amber-500/10 to-transparent shadow-2xl">
+                <div className="relative mb-3">
+                  <div className="h-32 w-28 rounded-2xl overflow-hidden border-2 border-amber-400/60 shadow-xl p-0.5 bg-amber-400/10">
+                    <img
+                      src={currentData.director.photo}
+                      alt={currentData.director.name}
+                      className="h-full w-full object-cover object-top rounded-xl"
+                    />
+                  </div>
+                  <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-400 text-black text-[10px] font-extrabold px-2.5 py-0.5 rounded-full shadow whitespace-nowrap">
+                    Director
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-white mt-1">{currentData.director.name}</h3>
+                <span className="text-xs font-medium text-amber-300">{currentData.director.qualification}</span>
+                <span className="text-[11px] text-white/50 font-medium uppercase tracking-wider mt-0.5">{currentData.director.title}</span>
+                <p className="mt-2.5 text-xs italic text-white/70 leading-relaxed border-t border-white/10 pt-2.5">
+                  &ldquo;{currentData.director.message}&rdquo;
+                </p>
+              </div>
+
+            </div>
+
+            {/* Key Stats Bar */}
+            <div className="mt-8 max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="frost-card p-4 rounded-2xl">
+                <span className="text-[10px] uppercase font-semibold text-amber-300/80 tracking-wider">Overall Result</span>
+                <div className="stat-font text-3xl font-bold shimmer-gold mt-1">{currentData.stats.overallPass}</div>
+                <span className="text-[11px] text-white/50 block mt-1">Pass Percentage</span>
+              </div>
+              <div className="frost-card p-4 rounded-2xl">
+                <span className="text-[10px] uppercase font-semibold text-amber-300/80 tracking-wider">Highest Score</span>
+                <div className="stat-font text-3xl font-bold shimmer-gold mt-1">{currentData.stats.topScore}</div>
+                <span className="text-[11px] text-white/50 block mt-1">{currentData.academicYear} Top Rank</span>
+              </div>
+              <div className="frost-card p-4 rounded-2xl">
+                <span className="text-[10px] uppercase font-semibold text-amber-300/80 tracking-wider">Special Record</span>
+                <div className="stat-font text-xl sm:text-2xl font-bold shimmer-gold mt-1">{currentData.stats.specialRecord}</div>
+                <span className="text-[11px] text-white/50 block mt-1">Excellence Honors</span>
+              </div>
+              <div className="frost-card p-4 rounded-2xl">
+                <span className="text-[10px] uppercase font-semibold text-amber-300/80 tracking-wider">Total Performers</span>
+                <div className="stat-font text-3xl font-bold shimmer-gold mt-1">{currentData.stats.totalStudents}</div>
+                <span className="text-[11px] text-white/50 block mt-1">Honored Students</span>
+              </div>
+            </div>
+          </section>
+
+          {/* Main HD Poster Showcase Section */}
+          <main className="flex-1 px-5 py-10 sm:px-8 lg:px-12 max-w-7xl mx-auto w-full">
+            <div className="frost-card rounded-3xl p-6 sm:p-10 border border-amber-400/30 text-center relative overflow-hidden bg-gradient-to-b from-amber-500/5 to-transparent">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 text-left">
+                <div>
+                  <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+                    <span>🖼️ Official {currentData.academicYear} Toppers Poster</span>
+                  </h2>
+                  <p className="text-xs text-white/60 mt-1">Click on the poster to expand into high-definition full screen view</p>
+                </div>
+                <button
+                  onClick={() => setIsLightboxOpen(true)}
+                  className="cta-button px-5 py-2.5 rounded-full text-xs font-bold text-amber-300 border border-amber-400/40 hover:bg-amber-400 hover:text-black transition-all shadow-lg flex items-center gap-2"
+                >
+                  <span>🔍 Expand HD Lightbox</span>
+                </button>
+              </div>
+
+              {/* Poster Image Frame */}
+              <div 
+                onClick={() => setIsLightboxOpen(true)}
+                className="cursor-pointer relative group rounded-2xl overflow-hidden border-2 border-white/15 hover:border-amber-400/80 shadow-2xl inline-block w-full transition-all"
+              >
+                <img 
+                  src={currentData.posterUrl} 
+                  alt={`Shree Institute ${currentData.academicYear} Poster`}
+                  className="w-full h-auto object-contain rounded-xl max-h-[750px] mx-auto bg-black"
+                />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-xs">
+                  <span className="bg-amber-400 text-black font-extrabold text-xs sm:text-sm px-6 py-3 rounded-full shadow-2xl transform group-hover:scale-105 transition-transform flex items-center gap-2">
+                    <span>🔍 Click to View Full HD Poster ({currentData.academicYear})</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          {/* Interactive Lightbox Modal */}
+          {isLightboxOpen && (
+            <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6">
+              <div className="relative max-w-6xl w-full frost-card rounded-3xl overflow-hidden border border-white/20 flex flex-col max-h-[92vh] shadow-2xl">
+                <div className="flex items-center justify-between p-4 px-6 border-b border-white/10 bg-black/80">
+                  <div className="flex items-center gap-3">
+                    <span className="text-amber-400 text-lg">🏆</span>
+                    <div>
+                      <h3 className="text-sm font-bold text-white">Shree Institute {currentData.academicYear} Toppers HD Poster</h3>
+                      <p className="text-[11px] text-white/50">Full Resolution Inspection Mode</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsLightboxOpen(false)}
+                    className="text-white/60 hover:text-white bg-white/10 hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold transition"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-black">
+                  <img
+                    src={currentData.posterUrl}
+                    alt={`Original Poster ${currentData.academicYear} HD`}
+                    className="max-w-full h-auto object-contain rounded-xl shadow-2xl max-h-[78vh]"
+                  />
+                </div>
+
+                <div className="p-4 px-6 border-t border-white/10 bg-black/80 flex items-center justify-between text-xs text-white/60">
+                  <span>📱 Pinch or scroll on mobile to zoom into student marks</span>
+                  <button
+                    onClick={() => setIsLightboxOpen(false)}
+                    className="cta-button text-white font-semibold px-5 py-2 rounded-full text-xs hover:bg-white/20"
+                  >
+                    Close Lightbox
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Footer */}
+          <footer className="mt-auto border-t border-white/10 bg-[#010101] py-8 px-5 sm:px-8 lg:px-12 text-xs text-white/60">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+              <div>
+                <p className="font-semibold text-white">Academic Director: Sridhar H.K. (M.Sc B.Ed)</p>
+                <p className="mt-0.5 text-white/50">Best Wishes from: Abhinandan Sir, Siddu Patil Sir, Pavankumar Sir</p>
+              </div>
+              <div className="text-center md:text-right">
+                <p className="text-amber-300/90 font-medium">📍 Near Sai Mandir, Behind Atharva Hotel, Kalaburagi</p>
+                <p className="mt-0.5 text-white/50">📞 Cell: 9611792157, 9886901560</p>
+              </div>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

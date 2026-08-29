@@ -124,32 +124,46 @@ export const TESTIMONIALS = [
   },
 ]
 
+export const PERFORMANCE_STATS = [
+  { label: 'Highest Board Score', value: '98.4%', sub: 'Class 10th CBSE/State' },
+  { label: 'Students Above 90%', value: '45+', sub: 'In 2024-25 Board Exams' },
+  { label: 'Perfect 100/100 Scores', value: '18', sub: 'In Mathematics & Science' },
+  { label: 'Overall Pass Percentage', value: '100%', sub: 'Consistent 15 Year Record' },
+]
+
 export const TOPPERS = [
   {
-    name: 'Aarav Patil',
-    score: '98.4%',
-    badge: 'Class 10 Board Topper',
-    highlights: 'Math: 100/100 | Science: 98/100',
-    quote: 'The 1-on-1 doubt sessions and weekly mock tests helped me achieve 100% in Math!',
-    year: '2025-26 Batch',
+    id: 1,
+    name: 'Anu',
+    category: 'Class 10th',
+    score: '608/625',
+    badge: '🏆 Topper of Our Institute',
+    school: 'Shree Institute of Learning',
+    highlights: '608 out of 625 marks',
+    image: '/topper_anu.png',
+    quote: 'Heartiest Congratulations from Shree Institute of Learning!',
+    year: '2025–26 Batch',
+    subjects: [
+      { name: 'Total Score', mark: '608/625' },
+    ],
   },
   {
-    name: 'Ananya Deshmukh',
-    score: '96.8%',
-    badge: 'State Distinction',
-    highlights: 'Science: 99/100 | Math: 97/100',
-    quote: 'Concept clarity in Physics and Chemistry made board questions super easy to solve.',
-    year: '2025-26 Batch',
-  },
-  {
-    name: 'Rohan Kulkarni',
-    score: '95.6%',
-    badge: 'NTSE & Olympiad Scholar',
-    highlights: 'Class 9 School Rank 1',
-    quote: 'Early foundation in Class 8 & 9 built my analytical thinking for competitive exams.',
-    year: '2025-26 Batch',
+    id: 2,
+    name: 'Vaishnavi',
+    category: 'Class 10th',
+    score: '600/625',
+    badge: '🥈 2nd Topper of Our Institute',
+    school: 'Shree Institute of Learning',
+    highlights: '600 out of 625 marks',
+    image: '/topper_vaishnavi.png',
+    quote: 'Congratulations from Shree Institute of Learning!',
+    year: '2025–26 Batch',
+    subjects: [
+      { name: 'Total Score', mark: '600/625' },
+    ],
   },
 ]
+
 
 export const ADMISSIONS = {
   title: 'Admissions Open for New Batches',
