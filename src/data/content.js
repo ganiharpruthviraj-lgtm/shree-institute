@@ -179,6 +179,6 @@ export const ADMISSIONS = {
 
 export const CONTACT = {
   phone: '+91 96117 92157',
-  address: 'Ring Road, Hirapura, Kalaburagi, Karnataka 585102',
+  address: 'Near Sai Mandir, Behind Atharva Hotel, Kalaburagi',
   mapsUrl: 'https://maps.app.goo.gl/c5dspNbE2wgy2z9H9',
 }

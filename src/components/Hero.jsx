@@ -187,8 +187,11 @@ export default function Hero() {
             form's 464px min-content, so 464 + 32 + 532 overflows a 1024px viewport. */}
         <main className="mt-auto flex flex-col gap-6 px-5 pb-8 sm:gap-8 sm:px-8 sm:pb-12 lg:px-12 lg:pb-16 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-xl">
-            {/* leading repeated at sm: `sm:text-4xl` carries its own line-height and,
-                being in a media query, would otherwise beat the base `leading-[1.1]` */}
+            {/* Location Badge */}
+            <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-400/10 px-3.5 py-1 text-xs font-semibold text-amber-300 backdrop-blur-md">
+              <span>📍 Near Sai Mandir, Behind Atharva Hotel, Kalaburagi</span>
+            </div>
+
             <h1
               className={`text-3xl font-semibold leading-[1.1] tracking-tight sm:text-4xl sm:leading-[1.1] lg:text-[3.5rem] ${tone.strong}`}
             >
