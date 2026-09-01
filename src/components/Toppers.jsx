@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { Trophy, ChevronRight } from 'lucide-react'
 import { useInView } from '../hooks/useInView'
 import { FrostCard, GUTTER, SectionHeading } from './ui'
+import ToppersModal from './ToppersModal'
 
 export default function Toppers() {
   const { ref, inView } = useInView()
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
     <section id="toppers" ref={ref} className={`${GUTTER} py-16 sm:py-20 lg:py-28 relative`}>
@@ -15,16 +18,15 @@ export default function Toppers() {
           subtitle="Shree Institute of Learning Congratulations & Honours"
           inView={inView}
         />
-        <a
-          href="/toppers-wall/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 px-4 py-2 text-xs font-bold text-black shadow-lg shadow-amber-500/20 hover:scale-105 transition-all duration-300 shrink-0"
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center gap-2 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 px-4 py-2 text-xs font-bold text-black shadow-lg shadow-amber-500/20 hover:scale-105 transition-all duration-300 shrink-0 cursor-pointer"
         >
           <Trophy className="h-4 w-4" />
           <span>Past Batches Wall (2019–2024)</span>
           <ChevronRight className="h-4 w-4" />
-        </a>
+        </button>
       </div>
 
       {/* Showcase Both Topper Pictures Cleanly */}
@@ -49,8 +51,9 @@ export default function Toppers() {
           </div>
         </FrostCard>
       </div>
+
+      {/* Instant Native React Past Batches Wall Modal */}
+      <ToppersModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   )
 }
-
-
