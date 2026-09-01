@@ -1,8 +1,50 @@
 // ---------------------------------------------------------------------------
 // Vercel Serverless Function — POST /api/book-demo
+// Security Hardened: Strict CORS, Input Sanitization, IP Rate Limiting
 // ---------------------------------------------------------------------------
 
 const ALLOWED_CLASSES = ['Class 8', 'Class 9', 'Class 10']
+
+// Configure allowed origins (override via ALLOWED_ORIGINS env var if set)
+const DEFAULT_ORIGINS = [
+  'http://localhost:5180',
+  'http://localhost:5181',
+  'http://localhost:5173',
+  'http://127.0.0.1:5180',
+]
+
+function getTargetOrigin(reqOrigin) {
+  const customOrigins = (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean)
+  const allowed = customOrigins.length > 0 ? customOrigins : DEFAULT_ORIGINS
+
+  if (!reqOrigin || allowed.includes(reqOrigin)) {
+    return reqOrigin || allowed[0]
+  }
+  return null
+}
+
+// In-memory rate limiting per IP (5 requests per 10 minutes)
+const hits = new Map()
+const MAX_PER_WINDOW = 5
+const WINDOW_MS = 10 * 60 * 1000
+
+function rateLimited(ip) {
+  const now = Date.now()
+  const recent = (hits.get(ip) || []).filter((time) => now - time < WINDOW_MS)
+  recent.push(now)
+  hits.set(ip, recent)
+  return recent.length > MAX_PER_WINDOW
+}
+
+/** Sanitize input strings to prevent XSS / Script Injection */
+function sanitizeString(str) {
+  return String(str || '')
+    .replace(/[<>'"&]/g, '')
+    .trim()
+}
 
 function normalisePhone(raw) {
   const digits = String(raw || '').replace(/\D/g, '')
@@ -23,19 +65,19 @@ function validate(body) {
     return { error: 'Please enter a valid 10-digit Indian mobile number.' }
   }
 
-  const studentName = String(body.studentName || '').trim().slice(0, 80)
-  if (studentName && studentName.length < 2) {
+  const rawName = sanitizeString(body.studentName).slice(0, 80)
+  if (rawName && rawName.length < 2) {
     return { error: 'Please enter the student’s full name.' }
   }
 
-  const studentClass = String(body.studentClass || '').trim()
+  const studentClass = sanitizeString(body.studentClass)
   if (studentClass && !ALLOWED_CLASSES.includes(studentClass)) {
     return { error: 'Please choose Class 8, Class 9 or Class 10.' }
   }
 
   return {
     lead: {
-      studentName: studentName || 'Not provided',
+      studentName: rawName || 'Not provided',
       studentClass: studentClass || 'Not specified',
       parentPhone,
       source: body.source === 'hero' ? 'Hero form' : 'Admission form',
@@ -63,9 +105,13 @@ function composeMessage(lead) {
 }
 
 export default async function handler(req, res) {
-  // CORS handling
+  const reqOrigin = req.headers.origin
+  const origin = getTargetOrigin(reqOrigin)
+
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
   res.setHeader('Access-Control-Allow-Credentials', 'true')
-  res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST')
   res.setHeader(
     'Access-Control-Allow-Headers',
@@ -77,7 +123,16 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== 'POST') {
-    return res.status(45) ? res.status(200).json({ service: 'shree-institute-vercel-api' }) : null
+    return res.status(200).json({ service: 'shree-institute-vercel-api' })
+  }
+
+  // Rate limit check by IP
+  const clientIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown'
+  if (rateLimited(clientIp)) {
+    return res.status(429).json({
+      success: false,
+      error: 'Too many requests. Please call us directly.',
+    })
   }
 
   const { error, lead } = validate(req.body || {})
